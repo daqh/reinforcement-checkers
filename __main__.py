@@ -11,7 +11,8 @@ def main():
     players = {
         # 'black': MinimaxPlayer('black', search_depth=3),
         'black': MctsPlayer('black'),
-        'white': MinimaxPlayer('white', search_depth=3)
+        'white': MctsPlayer('white'),
+        # 'white': MinimaxPlayer('white', search_depth=3)
     }
 
     whites = []
