@@ -87,28 +87,22 @@ class CheckersBoard:
                 ):
                     moves.append(CheckersMove(position, (jump_row, jump_col)))
 
-        print(f"Player {self.__turn}, adversary: {self.__turn * -1}")
         if abs(self.board[row][col]) == 2:
             for dr in [-1, 1]: 
                 for dc in [-1, 1]:  
                     for i in range(1, 8): 
                         new_row, new_col = row + dr * i, col + dc * i
                         if 0 <= new_row < 8 and 0 <= new_col < 8:
-                            print("Cazzoooo",self.board[new_row][new_col])
-                            print(f"Pos: {new_row}, {new_col}")
-                            print("------------------------------------------")
+                            
                             if self.board[new_row][new_col] == -1 * self.__turn or self.board[new_row][new_col] == -2 * self.__turn:
                                 jump_row, jump_col = new_row + dr, new_col + dc
                                 if abs(new_row - row) == 1 and abs(new_col - col) == 1:
-                                    # if self.board[new_row][new_col] == self.__turn * 2 or self.board[new_row][new_col] == self.__turn:
-                                    #     print("E rutt o cazz", self.board[new_row][new_col])
                                     if 0 <= jump_row < 8 and 0 <= jump_col < 8 and self.board[jump_row][jump_col] == 0:
                                         moves.append(CheckersMove(position, (jump_row, jump_col)))
                                 break
                             elif self.board[new_row][new_col] == 0:
                                 moves.append(CheckersMove(position, (new_row, new_col)))
                             elif self.board[new_row][new_col] == self.__turn:
-                                print("mammt puttam")
                                 break
                         else:
                             break
@@ -135,7 +129,6 @@ class CheckersBoard:
             jumped_row = (start_row + end_row) // 2
             jumped_col = (start_col + end_col) // 2
             if self.board[jumped_row][jumped_col] != 0:
-                print("Mammt: ",self.board[jumped_row][jumped_col])
                 self.board[jumped_row][jumped_col] = 0
                 piece_captured = True
                 pos = (jumped_row, jumped_col)
