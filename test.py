@@ -48,6 +48,8 @@ def simulate_game():
     print(f"Final Scores: Player 1: {total_rewards[1]} | Player 2: {total_rewards[-1]}")
     return total_rewards
 
+# t = simulate_game()
+
 while True:
     t = simulate_game()
     if t[1] > 12 or t[-1] > 12:
