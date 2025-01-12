@@ -2,6 +2,15 @@ class CheckersMove:
     def __init__(self, start, end):
         self.start = start
         self.end = end
+    
+    def __eq__(self, other):
+        if not isinstance(other, CheckersMove):
+            return False
+        return self.start == other.start and self.end == other.end
+
+    def __repr__(self):
+        return f"({self.start} -> {self.end})"
+
 
 class CheckersBoard:
     def __init__(self):
@@ -40,6 +49,13 @@ class CheckersBoard:
 
         print()
 
+    def to_string(self):
+        board_str = ""
+        for row in self.board:
+            row_str = " ".join(str(cell) for cell in row)
+            board_str += row_str + "\n"
+        return board_str
+    
     @property
     def turn(self) -> int:
         return self.__turn
@@ -62,7 +78,6 @@ class CheckersBoard:
                 move for move in moves
                 if abs(move.start[0] - move.end[0]) == 2 
             ]
-
 
         return moves
 
@@ -146,11 +161,13 @@ class CheckersBoard:
         return piece_captured, reward, pos
 
 
-    @property
-    def winner(self) -> int:
+    def winner(self, moves) -> int:
 
         player_1_pieces = sum(cell == 1 or cell == 2 for row in self.board for cell in row)
         player_2_pieces = sum(cell == -1 or cell == -2 for row in self.board for cell in row)
+
+        if moves == 0 or moves is None:
+            return -self.__turn
 
         if player_1_pieces == 0:
             return -1

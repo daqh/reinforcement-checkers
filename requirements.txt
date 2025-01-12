@@ -2,3 +2,7 @@ numpy
 gymnasium
 matplotlib
 pygame
+stable-baselines3
+gym
+shimmy>=2.0
+tensorboard
