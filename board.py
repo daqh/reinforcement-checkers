@@ -1,3 +1,5 @@
+import numpy as np
+
 class CheckersMove:
     def __init__(self, start, end):
         self.start = start
@@ -55,6 +57,22 @@ class CheckersBoard:
             row_str = " ".join(str(cell) for cell in row)
             board_str += row_str + "\n"
         return board_str
+    
+    def get_observation(self) -> np.ndarray:
+        observation = np.zeros((4, 8, 8), dtype=np.int8)
+
+        for row in range(8):
+            for col in range(8):
+                if self.board[row][col] == self.turn:
+                    observation[0, row, col] = self.turn
+                elif self.board[row][col] == self.turn * 2:
+                    observation[1, row, col] = self.turn * 2
+                elif self.board[row][col] == -self.turn:
+                    observation[2, row, col] = -self.turn
+                elif self.board[row][col] == -self.turn * 2:
+                    observation[3, row, col] = -self.turn * 2
+
+        return observation
     
     @property
     def turn(self) -> int:
