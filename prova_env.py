@@ -11,17 +11,13 @@ class CheckersEnv(gym.Env):
         self.board = CheckersBoard()
         
         self.action_space = spaces.MultiDiscrete([8, 8, 8, 8])  
-        self.observation_space = spaces.Box(low=-2, high=2, shape=(8, 8), dtype=np.int32)
-    
-    def step(self, action):
+        self.observation_space = spaces.Box(low=-2, high=2, shape=(4, 8, 8), dtype=np.int32)
 
+    def step(self, action):
         valid_moves = self.board.valid_moves()  
-        if action in valid_moves:
-            piece_captured, reward, pos = self.board.move(action)
-            done = self.board.winner(len(valid_moves)) != 0
-            return np.array(self.board.board), reward, done, {}
-        else:
-            return np.array(self.board.board), -1, False, {"invalid_move": True}  
+        piece_captured, reward, pos = self.board.move(action)
+        done = self.board.winner(len(valid_moves)) != 0
+        return np.array(self.board.board), reward, done, {}
 
     def reset(self):
         self.board = CheckersBoard()
