@@ -5,34 +5,14 @@ import time
 import random
 from prova_env import CheckersEnv
 
+from stable_baselines3 import PPO
+
 def simulate_game():
     env = CheckersEnv()
 
-    obs = env.reset()
-    done = False
-    total_reward = {1: 0, -1: 0}  
+    model = PPO("MlpPolicy", env, verbose=1)
+    env.set_adversary(model)
 
-    print("Inizio partita")
-    env.render()
-
-    while not done:
-        valid_moves = env.board.valid_moves()  
-
-        if valid_moves:
-            move = random.choice(valid_moves)
-
-            obs, reward, done, info = env.step(move)
-
-            total_reward[-env.board.turn] += reward 
-
-            env.render()  
-            print(f"Mossa: {move.start} -> {move.end}, Reward: {reward}, Done: {done}")
-        else:
-            print(f"Nessuna mossa valida disponibile per il giocatore {env.board.turn}.")
-            done = True  
-
-
-    print(f"Partita terminata, Reward totale per il giocatore 1: {total_reward[1]}, giocatore 2: {total_reward[-1]}")
-    print(f"Vincitore: {env.board.winner(len(valid_moves))}")
+    model.learn(total_timesteps=10000)
 
 simulate_game()

@@ -59,6 +59,7 @@ class CheckersBoard:
         return board_str
 
     def get_observation(self) -> np.ndarray:
+        # Aggiungere anche le mosse
         observation = np.zeros((4, 8, 8), dtype=np.int8)
         for row in range(8):
             for col in range(8):
