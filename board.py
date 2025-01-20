@@ -57,10 +57,9 @@ class CheckersBoard:
             row_str = " ".join(str(cell) for cell in row)
             board_str += row_str + "\n"
         return board_str
-    
+
     def get_observation(self) -> np.ndarray:
         observation = np.zeros((4, 8, 8), dtype=np.int8)
-
         for row in range(8):
             for col in range(8):
                 if self.board[row][col] == self.turn:
