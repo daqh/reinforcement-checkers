@@ -42,7 +42,7 @@ class CheckersEnv(gym.Env):
         closest_move = np.argmin(moves_diff)
         piece_captured, a_reward, pos = self.board.move(valid_moves[closest_move])
         done = self.board.winner(len(valid_moves)) != 0
-        self.board.print_board()
+        # self.board.print_board()
         return np.array(self.board.get_observation()), -a_reward + reward, done, False, {}
 
     def set_adversary(self, adversary):

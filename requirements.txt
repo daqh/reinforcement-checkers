@@ -6,3 +6,5 @@ stable-baselines3
 gym
 shimmy>=2.0
 tensorboard
+tqdm
+rich
