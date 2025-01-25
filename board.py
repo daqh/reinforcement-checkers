@@ -13,7 +13,6 @@ class CheckersMove:
     def __repr__(self):
         return f"({self.start} -> {self.end})"
 
-
 class CheckersBoard:
     def __init__(self):
         self.board = [[0 for _ in range(8)] for _ in range(8)]
