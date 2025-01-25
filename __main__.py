@@ -23,8 +23,5 @@ def simulate_game():
         print("Training model 2")
         model_2.learn(total_timesteps=1000, progress_bar=True)
 
-    plt.savefig("rpe.png") 
-    # TODO: play n games and track results
-
 if __name__ == "__main__":
     simulate_game()
