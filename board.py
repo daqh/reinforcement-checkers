@@ -178,7 +178,6 @@ class CheckersBoard:
 
         return piece_captured, reward, pos
 
-
     def winner(self, moves) -> int:
 
         player_1_pieces = sum(cell == 1 or cell == 2 for row in self.board for cell in row)
