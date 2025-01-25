@@ -31,7 +31,6 @@ def main():
             print(f"Nessuna mossa valida disponibile per il giocatore {env.board.turn}.")
             done = True  
 
-
     print(f"Partita terminata, Reward totale per il giocatore 1: {total_reward[1]}, giocatore 2: {total_reward[-1]}")
     print(f"Vincitore: {env.board.winner(len(valid_moves))}")
 
