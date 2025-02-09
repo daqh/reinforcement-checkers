@@ -1,3 +1,5 @@
+import numpy as np
+
 class CheckersMove:
     def __init__(self, start, end):
         self.start = start
@@ -15,7 +17,7 @@ class CheckersMove:
 class CheckersBoard:
     def __init__(self):
         self.board = [[0 for _ in range(8)] for _ in range(8)]
-        self.__turn = 1 
+        self.__turn = -1 
         self._initialize_board()
 
     def _initialize_board(self):
@@ -55,6 +57,22 @@ class CheckersBoard:
             row_str = " ".join(str(cell) for cell in row)
             board_str += row_str + "\n"
         return board_str
+
+    def get_observation(self) -> np.ndarray:
+        # Aggiungere anche le mosse
+        observation = np.zeros((4, 8, 8), dtype=np.int8)
+        for row in range(8):
+            for col in range(8):
+                if self.board[row][col] == self.turn:
+                    observation[0, row, col] = self.turn
+                elif self.board[row][col] == self.turn * 2:
+                    observation[1, row, col] = self.turn
+                elif self.board[row][col] == -self.turn:
+                    observation[2, row, col] = self.turn
+                elif self.board[row][col] == -self.turn * 2:
+                    observation[3, row, col] = self.turn
+
+        return observation
     
     @property
     def turn(self) -> int:
@@ -63,23 +81,29 @@ class CheckersBoard:
     def valid_moves(self) -> list[CheckersMove]:
         moves = []
         captures_available = False
-        
+
         for row in range(8):
             for col in range(8):
                 if self.board[row][col] == self.__turn or self.board[row][col] == self.__turn * 2:
                     piece_moves = self._generate_piece_moves((row, col))
                     moves.extend(piece_moves)
 
-                    if any(abs(move.start[0] - move.end[0]) == 2 for move in piece_moves):
-                        captures_available = True
+                    for move in piece_moves:
+                        if abs(move.start[0] - move.end[0]) == 2:
+                            mid_row = (move.start[0] + move.end[0]) // 2
+                            mid_col = (move.start[1] + move.end[1]) // 2
+                            mid_piece = self.board[mid_row][mid_col]
+                            if mid_piece == 0:
+                                break
+                            if mid_piece != 0 and (mid_piece // abs(mid_piece)) != self.__turn:
+                                captures_available = True
 
         if captures_available:
-            moves = [
-                move for move in moves
-                if abs(move.start[0] - move.end[0]) == 2 
-            ]
+            moves = [move for move in moves if abs(move.start[0] - move.end[0]) == 2]
+
 
         return moves
+
 
     def _generate_piece_moves(self, position) -> list[CheckersMove]:
         row, col = position
@@ -115,9 +139,10 @@ class CheckersBoard:
                                     if 0 <= jump_row < 8 and 0 <= jump_col < 8 and self.board[jump_row][jump_col] == 0:
                                         moves.append(CheckersMove(position, (jump_row, jump_col)))
                                 break
-                            elif self.board[new_row][new_col] == 0:
+                            if self.board[new_row][new_col] == 0:
                                 moves.append(CheckersMove(position, (new_row, new_col)))
-                            elif self.board[new_row][new_col] == self.__turn:
+                                # print(f"start from {position} to {new_row, new_col}")
+                            if self.board[new_row][new_col] == self.__turn:
                                 break
                         else:
                             break
@@ -160,18 +185,16 @@ class CheckersBoard:
 
         return piece_captured, reward, pos
 
-
     def winner(self, moves) -> int:
 
         player_1_pieces = sum(cell == 1 or cell == 2 for row in self.board for cell in row)
         player_2_pieces = sum(cell == -1 or cell == -2 for row in self.board for cell in row)
 
-        if moves == 0 or moves is None:
-            return -self.__turn
-
-        if player_1_pieces == 0:
-            return -1
-        elif player_2_pieces == 0:
+        if player_2_pieces == 0:
             return 1
+        elif player_1_pieces == 0:
+            return -1
         else:
+            if moves == 0 or moves is None:
+                return -self.__turn
             return 0
