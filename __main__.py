@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 
 def simulate_game():
-    env_1 = CheckersEnv()
+    env_1 = CheckersEnv(0.8)
     env_2 = CheckersEnv()
 
     model_1 = PPO("MlpPolicy", env_1, verbose=1, device="cuda")

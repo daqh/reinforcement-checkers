@@ -60,7 +60,7 @@ class CheckersEnv(gym.Env):
 
         # Clean pygame screen
         self.render('human')
-        sleep(0.5)
+        sleep(0.05)
 
         return np.array(self.board.get_observation()), (1 - self.alpha) * -a_reward + self.alpha * reward, done, False, {}
 
@@ -81,6 +81,7 @@ class CheckersEnv(gym.Env):
             self.s = pygame.display.set_mode((WIDTH, HEIGHT))
         else:
             self.s = pygame.Surface((WIDTH, HEIGHT)) if self.s == None else self.s
+        pygame.event.get()
         self.s.fill((22, 36, 71))
 
         for i in range(8):
