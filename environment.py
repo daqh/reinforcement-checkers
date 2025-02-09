@@ -32,30 +32,34 @@ class CheckersEnv(gym.Env):
         valid_moves = self.board.valid_moves()
         done = self.board.winner(len(valid_moves)) != 0
         if done:
+            print('The winner is', self.board.winner(len(valid_moves)))
             return np.array(self.board.get_observation()), 0, done, False, {}
 
         moves_latent = np.array([[*m.start, *m.end] for m in valid_moves])
         moves_diff = np.linalg.norm(action - moves_latent, axis=1)
         closest_move = np.argmin(moves_diff)
         piece_captured, reward, pos = self.board.move(valid_moves[closest_move])
+        self.render('human')
+        sleep(0.25)
+
         done = self.board.winner(len(valid_moves)) != 0
         if done:
+            print('The winner is', self.board.winner(len(valid_moves)))
             return np.array(self.board.get_observation()), reward, done, False, {}
 
         action, _ = self.adversary.predict(self.board.get_observation())
         valid_moves = self.board.valid_moves()
         done = self.board.winner(len(valid_moves)) != 0
         if done:
+            print('The winner is', self.board.winner(len(valid_moves)))
             return np.array(self.board.get_observation()), reward, done, False, {}
         moves_latent = np.array([[*m.start, *m.end] for m in valid_moves])
         moves_diff = np.linalg.norm(action - moves_latent, axis=1)
         closest_move = np.argmin(moves_diff)
         piece_captured, a_reward, pos = self.board.move(valid_moves[closest_move])
-        done = self.board.winner(len(valid_moves)) != 0
-
-        # Clean pygame screen
         self.render('human')
-        sleep(0.0125)
+        sleep(0.25)
+        done = self.board.winner(len(valid_moves)) != 0
 
         return np.array(self.board.get_observation()), (1 - self.alpha) * -a_reward + self.alpha * reward, done, False, {}
 

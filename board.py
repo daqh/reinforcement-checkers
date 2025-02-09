@@ -17,7 +17,7 @@ class CheckersMove:
 class CheckersBoard:
     def __init__(self):
         self.board = [[0 for _ in range(8)] for _ in range(8)]
-        self.__turn = 1 
+        self.__turn = -1 
         self._initialize_board()
 
     def _initialize_board(self):
@@ -190,12 +190,11 @@ class CheckersBoard:
         player_1_pieces = sum(cell == 1 or cell == 2 for row in self.board for cell in row)
         player_2_pieces = sum(cell == -1 or cell == -2 for row in self.board for cell in row)
 
-        if moves == 0 or moves is None:
-            return -self.__turn
-
-        if player_1_pieces == 0:
-            return -1
-        elif player_2_pieces == 0:
+        if player_2_pieces == 0:
             return 1
+        elif player_1_pieces == 0:
+            return -1
         else:
+            if moves == 0 or moves is None:
+                return -self.__turn
             return 0
