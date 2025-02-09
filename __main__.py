@@ -2,7 +2,7 @@ import random
 from board import CheckersBoard, CheckersMove
 import time
 import random
-from prova_env import CheckersEnv
+from environment import CheckersEnv
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3 import PPO, SAC
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ def simulate_game():
     env_2 = CheckersEnv()
 
     model_1 = PPO("MlpPolicy", env_1, verbose=1)
-    model_2 = SAC("MlpPolicy", env_2, verbose=1, device="mps")
+    model_2 = SAC("MlpPolicy", env_2, verbose=1, device="cuda")
     
     env_1.set_adversary(model_2)
     env_2.set_adversary(model_1)
