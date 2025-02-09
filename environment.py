@@ -17,15 +17,13 @@ class CheckersEnv(gym.Env):
 
         self.alpha = alpha
 
-        self.observation_space = spaces.Box(low=-2, high=2, shape=(4, 8, 8), dtype=np.int32)
-        self.action_space = spaces.Box(low=-2, high=2, shape=(2, 8, 8), dtype=np.int32)
+        self.observation_space = spaces.Box(low=0, high=1, shape=(4, 8, 8), dtype=np.int32)
+        # self.action_space = spaces.Box(low=-1, high=1, shape=(2, 8, 8), dtype=np.int32)
+        self.action_space = spaces.MultiDiscrete([8, 8, 8, 8])
         self.s = None
 
     def step(self, action):
         # Obtain the coordinates of the start and end of the move
-        start = action[0].argmax() // 8, action[0].argmax() % 8
-        end = action[1].argmax() // 8, action[1].argmax() % 8
-        action = np.array([*start, *end])
         # Since the agent move is not necessary a valid move,
         # We use these cordinates to select the closest valid move in the space of valid moves
         # The similarity between the agent move and the valid moves is calculated using the euclidean distance
@@ -45,13 +43,10 @@ class CheckersEnv(gym.Env):
             return np.array(self.board.get_observation()), reward, done, False, {}
 
         action, _ = self.adversary.predict(self.board.get_observation())
-        start = action[0].argmax() // 8, action[0].argmax() % 8
-        end = action[1].argmax() // 8, action[1].argmax() % 8
-        action = np.array([*start, *end])
         valid_moves = self.board.valid_moves()
         done = self.board.winner(len(valid_moves)) != 0
         if done:
-            return np.array(self.board.get_observation()), 0, done, False, {}
+            return np.array(self.board.get_observation()), reward, done, False, {}
         moves_latent = np.array([[*m.start, *m.end] for m in valid_moves])
         moves_diff = np.linalg.norm(action - moves_latent, axis=1)
         closest_move = np.argmin(moves_diff)
@@ -95,15 +90,15 @@ class CheckersEnv(gym.Env):
         for i in range(8):
             for j in range(8):
                 if self.board.board[i][j] == 1:
-                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (255, 255, 255))
-                elif self.board.board[i][j] == -1:
                     gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (0, 0, 0))
+                elif self.board.board[i][j] == -1:
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (255, 255, 255))
                 elif self.board.board[i][j] == 2:
-                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (200, 200, 200))
-                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 32, (255, 255, 255))
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 32, (55, 55, 55))
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (0, 0, 0))
                 elif self.board.board[i][j] == -2:
-                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (55, 55, 55))
-                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 32, (0, 0, 0))
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (255, 255, 255))
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 32, (200, 200, 200))
         
         if mode == 'human':
             pygame.display.flip()

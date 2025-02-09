@@ -68,9 +68,9 @@ class CheckersBoard:
                 elif self.board[row][col] == self.turn * 2:
                     observation[1, row, col] = self.turn
                 elif self.board[row][col] == -self.turn:
-                    observation[2, row, col] = -self.turn
+                    observation[2, row, col] = self.turn
                 elif self.board[row][col] == -self.turn * 2:
-                    observation[3, row, col] = -self.turn
+                    observation[3, row, col] = self.turn
 
         return observation
     
