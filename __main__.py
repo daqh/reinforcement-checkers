@@ -12,7 +12,7 @@ def simulate_game():
     env_1 = CheckersEnv()
     env_2 = CheckersEnv()
 
-    model_1 = PPO("MlpPolicy", env_1, verbose=1)
+    model_1 = PPO("MlpPolicy", env_1, verbose=1, device="cuda")
     model_2 = SAC("MlpPolicy", env_2, verbose=1, device="cuda")
     
     env_1.set_adversary(model_2)

@@ -14,17 +14,24 @@ class CheckersEnv(gym.Env):
         super(CheckersEnv, self).__init__()
         self.board = CheckersBoard()
 
-        self.action_space = spaces.Box(low=-2, high=2, shape=(2, 8, 8), dtype=np.int32)
         self.observation_space = spaces.Box(low=-2, high=2, shape=(4, 8, 8), dtype=np.int32)
+        self.action_space = spaces.Box(low=-2, high=2, shape=(2, 8, 8), dtype=np.int32)
 
     def step(self, action):
+        # Obtain the coordinates of the start and end of the move
         start = action[0].argmax() // 8, action[0].argmax() % 8
         end = action[1].argmax() // 8, action[1].argmax() % 8
         action = np.array([*start, *end])
+        # Since the agent move is not necessary a valid move,
+        # We use these cordinates to select the closest valid move in the space of valid moves
+        # The similarity between the agent move and the valid moves is calculated using the euclidean distance
+
+        # Get the set of all valid moves
         valid_moves = self.board.valid_moves()
         done = self.board.winner(len(valid_moves)) != 0
         if done:
             return np.array(self.board.get_observation()), 0, done, False, {}
+
         moves_latent = np.array([[*m.start, *m.end] for m in valid_moves])
         moves_diff = np.linalg.norm(action - moves_latent, axis=1)
         closest_move = np.argmin(moves_diff)
