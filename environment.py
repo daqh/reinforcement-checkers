@@ -100,8 +100,10 @@ class CheckersEnv(gym.Env):
                     gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (0, 0, 0))
                 elif self.board.board[i][j] == 2:
                     gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (200, 200, 200))
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 32, (255, 255, 255))
                 elif self.board.board[i][j] == -2:
                     gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (55, 55, 55))
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 32, (0, 0, 0))
         
         if mode == 'human':
             pygame.display.flip()
