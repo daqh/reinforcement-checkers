@@ -89,6 +89,21 @@ class Checkers:
         }
         return board
 
+    def get_observation(self) -> np.ndarray:
+        observation = np.zeros((4, 8, 8), dtype=np.int8)
+        for row in range(8):
+            for col in range(8):
+                if self.board[row][col] == self.turn:
+                    observation[0, row, col] = 1
+                elif self.board[row][col] == self.turn * 2:
+                    observation[1, row, col] = 1
+                elif self.board[row][col] == -self.turn:
+                    observation[2, row, col] = 1
+                elif self.board[row][col] == -self.turn * 2:
+                    observation[3, row, col] = 1
+
+        return observation
+
     @staticmethod
     def empty_board():
         board = {
