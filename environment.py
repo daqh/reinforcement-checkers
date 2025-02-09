@@ -60,7 +60,7 @@ class CheckersEnv(gym.Env):
 
         # Clean pygame screen
         self.render('human')
-        sleep(0.05)
+        sleep(0.025)
 
         return np.array(self.board.get_observation()), (1 - self.alpha) * -a_reward + self.alpha * reward, done, False, {}
 

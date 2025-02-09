@@ -4,12 +4,12 @@ import time
 import random
 from environment import CheckersEnv
 from stable_baselines3.common.evaluation import evaluate_policy
-from stable_baselines3 import PPO, SAC
+from stable_baselines3 import PPO, SAC, ppo
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
 def simulate_game():
-    env_1 = CheckersEnv(0.8)
+    env_1 = CheckersEnv(0.9)
     env_2 = CheckersEnv()
 
     model_1 = PPO("MlpPolicy", env_1, verbose=1, device="cuda")
