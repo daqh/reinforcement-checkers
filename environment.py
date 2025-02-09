@@ -55,7 +55,7 @@ class CheckersEnv(gym.Env):
 
         # Clean pygame screen
         self.render('human')
-        sleep(0.025)
+        sleep(0.0125)
 
         return np.array(self.board.get_observation()), (1 - self.alpha) * -a_reward + self.alpha * reward, done, False, {}
 
@@ -94,8 +94,8 @@ class CheckersEnv(gym.Env):
                 elif self.board.board[i][j] == -1:
                     gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (255, 255, 255))
                 elif self.board.board[i][j] == 2:
-                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 32, (55, 55, 55))
                     gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (0, 0, 0))
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 32, (55, 55, 55))
                 elif self.board.board[i][j] == -2:
                     gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (255, 255, 255))
                     gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 32, (200, 200, 200))
