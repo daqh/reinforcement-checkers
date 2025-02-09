@@ -6,16 +6,20 @@ from pygame import gfxdraw
 import pygame.surfarray
 import gymnasium as gym
 from board import CheckersBoard, CheckersMove
+from time import sleep
 
 class CheckersEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self):
+    def __init__(self, alpha=0.5):
         super(CheckersEnv, self).__init__()
         self.board = CheckersBoard()
 
+        self.alpha = alpha
+
         self.observation_space = spaces.Box(low=-2, high=2, shape=(4, 8, 8), dtype=np.int32)
         self.action_space = spaces.Box(low=-2, high=2, shape=(2, 8, 8), dtype=np.int32)
+        self.s = None
 
     def step(self, action):
         # Obtain the coordinates of the start and end of the move
@@ -53,8 +57,12 @@ class CheckersEnv(gym.Env):
         closest_move = np.argmin(moves_diff)
         piece_captured, a_reward, pos = self.board.move(valid_moves[closest_move])
         done = self.board.winner(len(valid_moves)) != 0
-        # self.board.print_board()
-        return np.array(self.board.get_observation()), -a_reward + reward, done, False, {}
+
+        # Clean pygame screen
+        self.render('human')
+        sleep(0.5)
+
+        return np.array(self.board.get_observation()), (1 - self.alpha) * -a_reward + self.alpha * reward, done, False, {}
 
     def set_adversary(self, adversary):
         self.adversary = adversary
@@ -68,28 +76,37 @@ class CheckersEnv(gym.Env):
             return
         assert mode in ['human', 'rgb_array'], 'mode must be either "human" or "rgb_array"'
         WIDTH, HEIGHT = 800, 800
-        if mode == 'human':
+        if mode == 'human' and self.s == None:
             pygame.init()
-            s = pygame.display.set_mode((WIDTH, HEIGHT))
+            self.s = pygame.display.set_mode((WIDTH, HEIGHT))
         else:
-            s = pygame.Surface((WIDTH, HEIGHT))
-        s.fill((22, 36, 71))
+            self.s = pygame.Surface((WIDTH, HEIGHT)) if self.s == None else self.s
+        self.s.fill((22, 36, 71))
 
         for i in range(8):
             for j in range(8):
                 if (i + j) % 2 == 0:
-                    gfxdraw.filled_polygon(s, [(i * WIDTH // 8, j * HEIGHT // 8),
+                    gfxdraw.filled_polygon(self.s, [(i * WIDTH // 8, j * HEIGHT // 8),
                                                     ((i + 1) * WIDTH // 8, j * HEIGHT // 8),
                                                     ((i + 1) * WIDTH // 8, (j + 1) * HEIGHT // 8),
                                                     (i * WIDTH // 8, (j + 1) * HEIGHT // 8)], (200, 200, 200))
-                    
-                    # TODO: Draw pieces
+
+        for i in range(8):
+            for j in range(8):
+                if self.board.board[i][j] == 1:
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (255, 255, 255))
+                elif self.board.board[i][j] == -1:
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (0, 0, 0))
+                elif self.board.board[i][j] == 2:
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (200, 200, 200))
+                elif self.board.board[i][j] == -2:
+                    gfxdraw.filled_circle(self.s, j * WIDTH // 8 + WIDTH // 16, i * HEIGHT // 8 + HEIGHT // 16, WIDTH // 16, (55, 55, 55))
         
         if mode == 'human':
             pygame.display.flip()
             return None
         else:
-            return pygame.surfarray.pixels3d(s)
+            return pygame.surfarray.pixels3d(self.s)
 
     def close(self):
         pygame.quit()

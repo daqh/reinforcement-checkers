@@ -16,14 +16,15 @@ def simulate_game():
     model_2 = SAC("MlpPolicy", env_2, verbose=1, device="cuda")
     
     env_1.set_adversary(model_2)
-    env_2.set_adversary(model_1)
+    # env_2.set_adversary(model_1)
+
+    env_1.render('human')
 
     for _ in range(5):
-
         print("Training model 1")
         model_1.learn(total_timesteps=1000, progress_bar=True)
-        print("Training model 2")
-        model_2.learn(total_timesteps=1000, progress_bar=True)
+        # print("Training model 2")
+        # model_2.learn(total_timesteps=1000, progress_bar=True)
 
 if __name__ == "__main__":
     simulate_game()
