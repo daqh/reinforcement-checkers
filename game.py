@@ -91,16 +91,17 @@ class Checkers:
 
     def get_observation(self) -> np.ndarray:
         observation = np.zeros((4, 8, 8), dtype=np.int8)
-        for row in range(8):
-            for col in range(8):
-                if self.board[row][col] == self.turn:
-                    observation[0, row, col] = 1
-                elif self.board[row][col] == self.turn * 2:
-                    observation[1, row, col] = 1
-                elif self.board[row][col] == -self.turn:
-                    observation[2, row, col] = 1
-                elif self.board[row][col] == -self.turn * 2:
-                    observation[3, row, col] = 1
+        
+        for piece_type, channel_idx in [('men', 0), ('kings', 1)]:
+            for pos in self.board['black'][piece_type]:
+                row, col = divmod(pos, 4)
+                col = col * 2 + (row % 2)
+                observation[channel_idx, row, col] = 1
+            
+            for pos in self.board['white'][piece_type]:
+                row, col = divmod(pos, 4)
+                col = col * 2 + ((row + 1) % 2)
+                observation[channel_idx + 2, row, col] = 1
 
         return observation
 
