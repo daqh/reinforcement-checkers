@@ -152,6 +152,7 @@ class Checkers:
             skip_check : bool
                 If the move is chosen from results returned by `legal_moves()`, the legality check can be skipped for efficiency. Default to be False.
         '''
+        captured = 0
         if not skip_check:
             # Reject illegal moves
             assert (from_sq, to_sq) in self.legal_moves(), 'The move is not legal.'
@@ -181,6 +182,7 @@ class Checkers:
                 pieces = self._board[self.adversary][type]
                 if capture_sq in pieces:
                     pieces.remove(capture_sq)
+                    captured = 1
                     break
             else:
                 assert False, 'An opposing piece must be captured.'
@@ -210,7 +212,7 @@ class Checkers:
             winner = self.adversary
         else:
             winner = None
-        return self.board, self.turn, self.last_moved_piece, all_next_moves, winner
+        return self.board, self.turn, self.last_moved_piece, all_next_moves, winner, captured
 
     @property
     def adversary(self):
