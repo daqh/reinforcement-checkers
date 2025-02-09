@@ -44,7 +44,7 @@ class CheckersEnv(gym.Env):
             self.b_victories += 1 if winner == 'black' else 0
             self.w_victories += 1 if winner == 'white' else 0
             print('B/W:', self.b_victories, self.w_victories, self.b_victories / (self.b_victories + self.w_victories))
-            return np.array(self.board.get_observation()), captured + (12 if winner == 'black' else -12), True, False, {}
+            return np.array(self.board.get_observation()), captured * 2 + (12 if winner == 'black' else -12), True, False, {}
 
         action, _ = self.adversary.predict(self.board.get_observation())
         action = np.array([action // 64, action % 64])
@@ -58,9 +58,9 @@ class CheckersEnv(gym.Env):
             self.b_victories += 1 if winner == 'black' else 0
             self.w_victories += 1 if winner == 'white' else 0
             print('B/W:', self.b_victories, self.w_victories, self.b_victories / (self.b_victories + self.w_victories))
-            return np.array(self.board.get_observation()), -a_captured + (12 if winner == 'black' else -12), True, False, {}
+            return np.array(self.board.get_observation()), -a_captured * 2 + (12 if winner == 'black' else -12), True, False, {}
 
-        return np.array(self.board.get_observation()), (1 - self.alpha) * -a_captured + self.alpha * captured, False, False, {}
+        return np.array(self.board.get_observation()), (1 - self.alpha) * -a_captured * 2 + self.alpha * captured * 2, False, False, {}
 
     def set_adversary(self, adversary):
         self.adversary = adversary
