@@ -32,33 +32,35 @@ class CheckersEnv(gym.Env):
         # We use these cordinates to select the closest valid move in the space of valid moves
         # The similarity between the agent move and the valid moves is calculated using the euclidean distance
 
-        action = np.array([action // 64, action % 64])
-        # Get the set of all valid moves
-        legal_moves = np.array(self.board.legal_moves())
-        moves_diff = np.linalg.norm(action - legal_moves, axis=1)
-        closest_move = legal_moves[moves_diff.argmin()]
-        _, _, _, _, winner, captured = self.board.move(*closest_move)
-        self.render('human')
-        if winner:
-            # print('The winner is', winner)
-            self.b_victories += 1 if winner == 'black' else 0
-            self.w_victories += 1 if winner == 'white' else 0
-            print('B/W:', self.b_victories, self.w_victories, self.b_victories / (self.b_victories + self.w_victories))
-            return np.array(self.board.get_observation()), captured * 2 + (12 if winner == 'black' else -12), True, False, {}
+        while self.board.turn == 'black':
+            action_ = np.array([action // 64, action % 64])
+            # Get the set of all valid moves
+            legal_moves = np.array(self.board.legal_moves())
+            moves_diff = np.linalg.norm(action_ - legal_moves, axis=1)
+            closest_move = legal_moves[moves_diff.argmin()]
+            _, _, _, _, winner, captured = self.board.move(*closest_move)
+            self.render('human')
+            if winner:
+                # print('The winner is', winner)
+                self.b_victories += 1 if winner == 'black' else 0
+                self.w_victories += 1 if winner == 'white' else 0
+                print('B/W:', self.b_victories, self.w_victories, self.b_victories / (self.b_victories + self.w_victories))
+                return np.array(self.board.get_observation()), captured * 2 + (12 if winner == 'black' else -12), True, False, {}
 
-        action, _ = self.adversary.predict(self.board.get_observation())
-        action = np.array([action // 64, action % 64])
-        legal_moves = np.array(self.board.legal_moves())
-        moves_diff = np.linalg.norm(action - legal_moves, axis=1)
-        closest_move = legal_moves[moves_diff.argmin()]
-        _, _, _, _, winner, a_captured = self.board.move(*closest_move)
-        self.render('human')
-        if winner:
-            # print('The winner is', winner)
-            self.b_victories += 1 if winner == 'black' else 0
-            self.w_victories += 1 if winner == 'white' else 0
-            print('B/W:', self.b_victories, self.w_victories, self.b_victories / (self.b_victories + self.w_victories))
-            return np.array(self.board.get_observation()), -a_captured * 2 + (12 if winner == 'black' else -12), True, False, {}
+        while self.board.turn == 'white':
+            action, _ = self.adversary.predict(self.board.get_observation())
+            action_ = np.array([action // 64, action % 64])
+            legal_moves = np.array(self.board.legal_moves())
+            moves_diff = np.linalg.norm(action_ - legal_moves, axis=1)
+            closest_move = legal_moves[moves_diff.argmin()]
+            _, _, _, _, winner, a_captured = self.board.move(*closest_move)
+            self.render('human')
+            if winner:
+                # print('The winner is', winner)
+                self.b_victories += 1 if winner == 'black' else 0
+                self.w_victories += 1 if winner == 'white' else 0
+                print('B/W:', self.b_victories, self.w_victories, self.b_victories / (self.b_victories + self.w_victories))
+                return np.array(self.board.get_observation()), -a_captured * 2 + (12 if winner == 'black' else -12), True, False, {}
 
         return np.array(self.board.get_observation()), (1 - self.alpha) * -a_captured * 2 + self.alpha * captured * 2, False, False, {}
 

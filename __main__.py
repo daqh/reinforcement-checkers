@@ -10,7 +10,7 @@ from models import RandomModel
 import torch
 
 def simulate_game():
-    env_1 = CheckersEnv(0.7)
+    env_1 = CheckersEnv(0.5)
     # env_2 = CheckersEnv()
 
     model_1 = DQN(
@@ -22,7 +22,7 @@ def simulate_game():
         train_freq=(3, "episode"),
         policy_kwargs=dict(
             activation_fn=torch.nn.ReLU,
-            net_arch=[256, 256, 256, 256]
+            net_arch=[256, 512, 1024, 2048],
         ),
     )
     # model_2 = A2C("MlpPolicy", env_2, verbose=1, device="cuda")

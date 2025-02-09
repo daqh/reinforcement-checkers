@@ -95,14 +95,10 @@ class Checkers:
         for piece_type, channel_idx in [('men', 0), ('kings', 1)]:
             
             for pos in self.board[self.turn][piece_type]:
-                row, col = divmod(pos, 4)
-                col = col * 2 + (row % 2)
-                observation[channel_idx, row, col] = 1
+                observation[channel_idx, *self.sq2pos(pos)] = 1
             
             for pos in self.board[self.adversary][piece_type]:
-                row, col = divmod(pos, 4)
-                col = col * 2 + ((row + 1) % 2)
-                observation[channel_idx + 2, row, col] = 1
+                observation[channel_idx + 2, *self.sq2pos(pos)] = 1
 
         return observation
 
