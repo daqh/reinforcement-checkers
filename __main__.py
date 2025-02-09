@@ -3,7 +3,7 @@ from board import CheckersBoard, CheckersMove
 import time
 
 import random
-from prova_env import CheckersEnv
+from environment import CheckersEnv
 
 def main():
     env = CheckersEnv()
