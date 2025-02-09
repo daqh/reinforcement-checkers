@@ -7,12 +7,24 @@ from stable_baselines3 import PPO, A2C, DQN
 import matplotlib.pyplot as plt
 from copy import deepcopy
 from models import RandomModel
+import torch
 
 def simulate_game():
     env_1 = CheckersEnv(0.7)
     # env_2 = CheckersEnv()
 
-    model_1 = DQN("MlpPolicy", env_1, verbose=1, device="cuda", gamma=0.99, train_freq=(3, "episode"))
+    model_1 = DQN(
+        "MlpPolicy",
+        env_1,
+        verbose=1,
+        device="cuda",
+        gamma=0.99,
+        train_freq=(3, "episode"),
+        policy_kwargs=dict(
+            activation_fn=torch.nn.ReLU,
+            net_arch=[256, 256, 256, 256]
+        ),
+    )
     # model_2 = A2C("MlpPolicy", env_2, verbose=1, device="cuda")
     model_2 = RandomModel()
     
