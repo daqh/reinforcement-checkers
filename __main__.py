@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 from models import RandomModel
 import torch
+import tensorboard
 
 def simulate_game():
     env_1 = CheckersEnv(0.5)
@@ -20,6 +21,10 @@ def simulate_game():
         device="cuda",
         gamma=0.99,
         train_freq=(3, "episode"),
+        exploration_fraction=0.99,
+        exploration_final_eps=0.3,
+        tensorboard_log="./logs/",
+        learning_rate=0.0001,
         policy_kwargs=dict(
             activation_fn=torch.nn.ReLU,
             net_arch=[256, 512, 1024, 2048],
@@ -34,7 +39,7 @@ def simulate_game():
     env_1.render('human')
 
     print("Training model 1")
-    model_1 = model_1.learn(total_timesteps=1000000, progress_bar=True)
+    model_1 = model_1.learn(total_timesteps=2500000, progress_bar=True)
     # print("Training model 2")
     # model_2 = model_2.learn(total_timesteps=1000, progress_bar=True)
 
