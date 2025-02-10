@@ -23,8 +23,8 @@ class CheckersEnv(gym.Env):
         self.action_space = spaces.Discrete(64 * 64)
         # self.action_space = spaces.MultiDiscrete([64, 64])
         self.s = None
-        self.b_victories = 0
-        self.w_victories = 0
+        self.victories = [0 for _ in range(1000)]
+        self.match = 0
 
     def step(self, action):
         # Obtain the coordinates of the start and end of the move
@@ -41,10 +41,9 @@ class CheckersEnv(gym.Env):
             _, _, _, _, winner, captured = self.board.move(*closest_move)
             self.render('human')
             if winner:
-                # print('The winner is', winner)
-                self.b_victories += 1 if winner == 'black' else 0
-                self.w_victories += 1 if winner == 'white' else 0
-                print('B/W:', self.b_victories, self.w_victories, self.b_victories / (self.b_victories + self.w_victories))
+                self.victories[self.match % 1000] = winner
+                self.match += 1
+                print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
                 return np.array(self.board.get_observation()), captured * 2 + (12 if winner == 'black' else -12), True, False, {}
 
         while self.board.turn == 'white':
@@ -56,10 +55,9 @@ class CheckersEnv(gym.Env):
             _, _, _, _, winner, a_captured = self.board.move(*closest_move)
             self.render('human')
             if winner:
-                # print('The winner is', winner)
-                self.b_victories += 1 if winner == 'black' else 0
-                self.w_victories += 1 if winner == 'white' else 0
-                print('B/W:', self.b_victories, self.w_victories, self.b_victories / (self.b_victories + self.w_victories))
+                self.victories[self.match % 1000] = winner
+                self.match += 1
+                print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
                 return np.array(self.board.get_observation()), -a_captured * 2 + (12 if winner == 'black' else -12), True, False, {}
 
         return np.array(self.board.get_observation()), (1 - self.alpha) * -a_captured * 2 + self.alpha * captured * 2, False, False, {}
