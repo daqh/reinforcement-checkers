@@ -22,7 +22,7 @@ def simulate_game():
         gamma=0.99,
         train_freq=(3, "episode"),
         exploration_fraction=0.99,
-        exploration_final_eps=0.3,
+        exploration_final_eps=0.05,
         tensorboard_log="./logs/",
         learning_rate=0.0001,
         policy_kwargs=dict(
