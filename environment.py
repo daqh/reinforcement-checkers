@@ -12,19 +12,21 @@ from time import sleep
 class CheckersEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, alpha=0.5):
+    def __init__(self, alpha=0.5, max_moves=1000):
         super(CheckersEnv, self).__init__()
         self.board = Checkers(empty_corner=True)
 
         self.alpha = alpha
 
-        self.observation_space = spaces.Box(low=0, high=1, shape=(4, 8, 8), dtype=np.int32)
+        self.observation_space = spaces.Box(low=0, high=1, shape=(6, 8, 8), dtype=np.int32)
         # self.action_space = spaces.Box(low=-1, high=1, shape=(2, 8, 8), dtype=np.int32)
         self.action_space = spaces.Discrete(64 * 64)
         # self.action_space = spaces.MultiDiscrete([64, 64])
         self.s = None
         self.victories = [0 for _ in range(1000)]
         self.match = 0
+        self.moves = 0
+        self.max_moves = max_moves
 
     def step(self, action):
         # Obtain the coordinates of the start and end of the move
@@ -39,12 +41,13 @@ class CheckersEnv(gym.Env):
             moves_diff = np.linalg.norm(action_ - legal_moves, axis=1)
             closest_move = legal_moves[moves_diff.argmin()]
             _, _, _, _, winner, captured = self.board.move(*closest_move)
-            self.render('human')
+            # self.render('human')
             if winner:
                 self.victories[self.match % 1000] = winner
                 self.match += 1
                 print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
                 return np.array(self.board.get_observation()), captured * 2 + (12 if winner == 'black' else -12), True, False, {}
+            self.moves += 1
 
         while self.board.turn == 'white':
             action, _ = self.adversary.predict(self.board.get_observation())
@@ -53,12 +56,16 @@ class CheckersEnv(gym.Env):
             moves_diff = np.linalg.norm(action_ - legal_moves, axis=1)
             closest_move = legal_moves[moves_diff.argmin()]
             _, _, _, _, winner, a_captured = self.board.move(*closest_move)
-            self.render('human')
+            # self.render('human')
             if winner:
                 self.victories[self.match % 1000] = winner
                 self.match += 1
                 print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
                 return np.array(self.board.get_observation()), -a_captured * 2 + (12 if winner == 'black' else -12), True, False, {}
+            self.moves += 1
+        
+        if self.moves >= self.max_moves:
+            return np.array(self.board.get_observation()), (1 - self.alpha) * -a_captured * 2 + self.alpha * captured * 2 - 12, True, True, {}
 
         return np.array(self.board.get_observation()), (1 - self.alpha) * -a_captured * 2 + self.alpha * captured * 2, False, False, {}
 
@@ -67,6 +74,7 @@ class CheckersEnv(gym.Env):
 
     def reset(self, *args, **kwargs):
         self.board = Checkers(empty_corner=True)
+        self.moves = 0
         return np.array(self.board.get_observation()), {}
 
     def render(self, mode: str = None):

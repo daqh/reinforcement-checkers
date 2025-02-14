@@ -90,7 +90,8 @@ class Checkers:
         return board
 
     def get_observation(self) -> np.ndarray:
-        observation = np.zeros((4, 8, 8), dtype=np.int8)
+        observation = np.zeros((6, 8, 8), dtype=np.int8)
+        # TODO: Add observations related to standard moves and jumps
         
         for piece_type, channel_idx in [('men', 0), ('kings', 1)]:
             
@@ -99,6 +100,10 @@ class Checkers:
             
             for pos in self.board[self.adversary][piece_type]:
                 observation[channel_idx + 2, *self.sq2pos(pos)] = 1
+        
+        for move in self.legal_moves():
+            observation[4, *self.sq2pos(move[0])] = 1
+            observation[5, *self.sq2pos(move[1])] = 1
 
         return observation
 
