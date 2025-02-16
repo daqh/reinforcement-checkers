@@ -173,4 +173,5 @@ cython_debug/
 # Todo
 todo.md
 logs/
+*_hp_logs/*
 *.db

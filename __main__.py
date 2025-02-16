@@ -60,48 +60,51 @@ def optimize_agent(trial):
 
     return mean_reward
 
-# def simulate_game():
-#     env_1 = CheckersEnv(0.5)
-#     # env_2 = CheckersEnv()
+def simulate_game():
+    env_1 = CheckersEnv(0.5)
+    # env_2 = CheckersEnv()
 
-#     model_1 = DQN(
-#         "MlpPolicy",
-#         env_1,
-#         verbose=1,
-#         device="cuda",
-#         gamma=0.99,
-#         train_freq=(3, "episode"),
-#         exploration_fraction=0.95,
-#         exploration_final_eps=0.05,
-#         tensorboard_log="./logs/",
-#         learning_rate=7.061453316610341e-05,
-#         policy_kwargs=dict(
-#             activation_fn=torch.nn.ReLU,
-#             net_arch=[256, 512, 1024, 2048],
-#         ),
-#     )
-#     # model_2 = A2C("MlpPolicy", env_2, verbose=1, device="cuda")
-#     model_2 = RandomModel()
+    model_1 = DQN(
+        "MlpPolicy",
+        env_1,
+        verbose=1,
+        device="cuda",
+        tensorboard_log="./logs/",
+
+        learning_rate=0.00023191186649935383,
+        gamma=0.45204166985524347,
+        batch_size=4,
+        buffer_size=78270,
+        learning_starts=984,
+        train_freq=1,
+
+        policy_kwargs=dict(
+            activation_fn=torch.nn.ReLU,
+            net_arch=[256, 512, 1024, 2048],
+        ),
+    )
+    # model_2 = A2C("MlpPolicy", env_2, verbose=1, device="cuda")
+    model_2 = RandomModel()
     
-#     env_1.set_adversary(model_2)
-#     # env_2.set_adversary(model_1)
+    env_1.set_adversary(model_2)
+    # env_2.set_adversary(model_1)
 
-#     env_1.render('human')
+    env_1.render('human')
 
-#     print("Training model 1")
-#     model_1 = model_1.learn(total_timesteps=20000000, progress_bar=True)
+    print("Training model 1")
+    model_1 = model_1.learn(total_timesteps=10000000, progress_bar=True)
     # print("Training model 2")
     # model_2 = model_2.learn(total_timesteps=1000, progress_bar=True)
 
 if __name__ == "__main__":
-    # simulate_game()
+    simulate_game()
 
-    study = optuna.create_study(
-        direction="maximize",
-        study_name="DQN_study",
-        storage="sqlite:///DQN.db",
-        load_if_exists=True,
-    )
-    study.optimize(optimize_agent, n_trials=50, gc_after_trial=True)
+    # study = optuna.create_study(
+    #     direction="maximize",
+    #     study_name="DQN_study",
+    #     storage="sqlite:///DQN.db",
+    #     load_if_exists=True,
+    # )
+    # study.optimize(optimize_agent, n_trials=50, gc_after_trial=True)
 
-    print(study.best_params)
+    # print(study.best_params)

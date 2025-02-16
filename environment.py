@@ -18,10 +18,9 @@ class CheckersEnv(gym.Env):
 
         self.alpha = alpha
 
-        self.observation_space = spaces.Box(low=0, high=1, shape=(6, 8, 8), dtype=np.int32)
-        # self.action_space = spaces.Box(low=-1, high=1, shape=(2, 8, 8), dtype=np.int32)
+        self.observation_space = spaces.Box(low=0, high=1, shape=(6, 8, 8), dtype=np.uint8)
         self.action_space = spaces.Discrete(64 * 64)
-        # self.action_space = spaces.MultiDiscrete([64, 64])
+
         self.s = None
         self.victories = [0 for _ in range(1000)]
         self.match = 0
