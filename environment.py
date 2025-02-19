@@ -22,7 +22,7 @@ class CheckersEnv(gym.Env):
         self.action_space = spaces.Discrete(64 * 64)
 
         self.s = None
-        self.victories = [0 for _ in range(1000)]
+        self.victories = [0 for _ in range(2500)]
         self.match = 0
         self.moves = 0
         self.max_moves = max_moves
@@ -42,7 +42,7 @@ class CheckersEnv(gym.Env):
             _, _, _, _, winner, captured = self.board.move(*closest_move)
             # self.render('human')
             if winner:
-                self.victories[self.match % 1000] = winner
+                self.victories[self.match % 2500] = winner
                 self.match += 1
                 print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
                 return np.array(self.board.get_observation()), captured * 2 + (12 if winner == 'black' else -12), True, False, {}
@@ -57,7 +57,7 @@ class CheckersEnv(gym.Env):
             _, _, _, _, winner, a_captured = self.board.move(*closest_move)
             # self.render('human')
             if winner:
-                self.victories[self.match % 1000] = winner
+                self.victories[self.match % 2500] = winner
                 self.match += 1
                 print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
                 return np.array(self.board.get_observation()), -a_captured * 2 + (12 if winner == 'black' else -12), True, False, {}

@@ -175,3 +175,4 @@ todo.md
 logs/
 *_hp_logs/*
 *.db
+*_logs/*
