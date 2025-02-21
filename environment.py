@@ -19,7 +19,7 @@ class CheckersEnv(gym.Env):
         self.alpha = alpha
 
         self.observation_space = spaces.Box(low=0, high=1, shape=(6, 8, 8), dtype=np.uint8)
-        self.action_space = spaces.Discrete(64 * 64)
+        self.action_space = spaces.Discrete(32 * 32)
 
         self.s = None
         self.victories = [0 for _ in range(2500)]
@@ -34,7 +34,7 @@ class CheckersEnv(gym.Env):
         # The similarity between the agent move and the valid moves is calculated using the euclidean distance
 
         while self.board.turn == 'black':
-            action_ = np.array([action // 64, action % 64])
+            action_ = np.array([action // 32, action % 32])
             # Get the set of all valid moves
             legal_moves = np.array(self.board.legal_moves())
             moves_diff = np.linalg.norm(action_ - legal_moves, axis=1)
@@ -44,22 +44,23 @@ class CheckersEnv(gym.Env):
             if winner:
                 self.victories[self.match % 2500] = winner
                 self.match += 1
-                print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
+                # print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
                 return np.array(self.board.get_observation()), captured * 2 + (12 if winner == 'black' else -12), True, False, {}
             self.moves += 1
 
         while self.board.turn == 'white':
             action, _ = self.adversary.predict(self.board.get_observation())
-            action_ = np.array([action // 64, action % 64])
+            action_ = np.array([action // 32, action % 32])
             legal_moves = np.array(self.board.legal_moves())
-            moves_diff = np.linalg.norm(action_ - legal_moves, axis=1)
+            _legal_moves = np.array([[31 - c for c in  m] for m in legal_moves])
+            moves_diff = np.linalg.norm(action_ - _legal_moves, axis=1)
             closest_move = legal_moves[moves_diff.argmin()]
             _, _, _, _, winner, a_captured = self.board.move(*closest_move)
             # self.render('human')
             if winner:
                 self.victories[self.match % 2500] = winner
                 self.match += 1
-                print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
+                # print('B/W:', self.victories.count("black"), self.victories.count("white"), self.victories.count("black") / (self.victories.count("black") + self.victories.count("white")))
                 return np.array(self.board.get_observation()), -a_captured * 2 + (12 if winner == 'black' else -12), True, False, {}
             self.moves += 1
         

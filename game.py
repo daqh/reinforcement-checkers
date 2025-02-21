@@ -95,15 +95,18 @@ class Checkers:
         
         for piece_type, channel_idx in [('men', 0), ('kings', 1)]:
             
-            for pos in self.board[self.turn][piece_type]:
-                observation[channel_idx, *self.sq2pos(pos)] = 1
-            
-            for pos in self.board[self.adversary][piece_type]:
-                observation[channel_idx + 2, *self.sq2pos(pos)] = 1
+            for sq in self.board[self.turn][piece_type]:
+                _sq = sq if self.turn == 'black' else 31 - sq
+                observation[channel_idx, *self.sq2pos(_sq)] = 1
+
+            for sq in self.board[self.adversary][piece_type]:
+                _sq = sq if self.adversary == 'black' else 31 - sq
+                observation[channel_idx + 2, *self.sq2pos(_sq)] = 1
         
         for move in self.legal_moves():
-            observation[4, *self.sq2pos(move[0])] = 1
-            observation[5, *self.sq2pos(move[1])] = 1
+            _move = [31 - move[0], 31 - move[1]] if self.turn == 'white' else move
+            observation[4, *self.sq2pos(_move[0])] = 1
+            observation[5, *self.sq2pos(_move[1])] = 1
 
         return observation
 

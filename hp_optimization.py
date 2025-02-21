@@ -47,6 +47,8 @@ def optimize_hyperparameters(trial, model_name: str):
     }
     return config
 
+from random import randint
+
 if __name__ == "__main__":
     import argparse
 
@@ -88,11 +90,11 @@ if __name__ == "__main__":
                 env,
                 verbose=1,
                 device="cuda",
-                tensorboard_log="./dqn_hp_logs/",
+                tensorboard_log=f"./dqn_hp_logs_{randint(0,99999)}/",
                 **model_params,
                 policy_kwargs=dict(
                     activation_fn=torch.nn.LeakyReLU,
-                    net_arch=[256, 512, 1024, 2048],
+                    net_arch=[256, 512, 512, 1024],
                 ),
             )
         elif model_name == "PPO":
@@ -101,11 +103,11 @@ if __name__ == "__main__":
                 env,
                 verbose=1,
                 device="cuda",
-                tensorboard_log="./ppo_hp_logs/",
+                tensorboard_log=f"./ppo_hp_logs_{randint(0,99999)}/",
                 **model_params,
                 policy_kwargs=dict(
                     activation_fn=torch.nn.LeakyReLU,
-                    net_arch=[256, 512, 1024, 2048],
+                    net_arch=[256, 512, 512, 1024],
                 ),
             )
         elif model_name == "A2C":
@@ -114,11 +116,11 @@ if __name__ == "__main__":
                 env,
                 verbose=1,
                 device="cuda",
-                tensorboard_log="./a2c_hp_logs/",
+                tensorboard_log=f"./a2c_hp_logs_{randint(0,99999)}/",
                 **model_params,
                 policy_kwargs=dict(
                     activation_fn=torch.nn.LeakyReLU,
-                    net_arch=[256, 512, 1024, 2048],
+                    net_arch=[256, 512, 512, 1024],
                 ),
             )
 
@@ -126,12 +128,12 @@ if __name__ == "__main__":
         model.learn(
             total_timesteps=TRAINING_TIMESTEPS,
             log_interval=20,
-            progress_bar=True,
+            progress_bar=False,
         )
         mean_reward, _ = evaluation.evaluate_policy(model, env, n_eval_episodes=10)
         return mean_reward
 
-    study.optimize(optimize_agent, n_trials=50, gc_after_trial=True)
+    study.optimize(optimize_agent, n_trials=50, gc_after_trial=True, n_jobs=8, show_progress_bar=True)
 
     import pickle
 

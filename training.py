@@ -9,7 +9,6 @@ import torch
 import tensorboard
 from stable_baselines3.common import evaluation, policies
 import pickle
-import dill
 
 timesteps = {
     'DQN': 10000000,
@@ -29,7 +28,7 @@ def simulate_game(model_name):
             **pickle.load(open(f"{model_name}_best_params.pkl", "rb")),
             policy_kwargs=dict(
                 activation_fn=torch.nn.ReLU,
-                net_arch=[256, 512, 1024, 2048],
+                net_arch=[256, 512, 512, 1024],
             ),
         )
     elif model_name == "PPO":
@@ -42,7 +41,7 @@ def simulate_game(model_name):
             **pickle.load(open(f"{model_name}_best_params.pkl", "rb")),
             policy_kwargs=dict(
                 activation_fn=torch.nn.LeakyReLU,
-                net_arch=[256, 512, 1024, 2048],
+                net_arch=[256, 512, 512, 1024],
             ),
         )
     elif model_name == "A2C":
@@ -55,14 +54,14 @@ def simulate_game(model_name):
             **pickle.load(open(f"{model_name}_best_params.pkl", "rb")),
             policy_kwargs=dict(
                 activation_fn=torch.nn.LeakyReLU,
-                net_arch=[256, 512, 1024, 2048],
+                net_arch=[256, 512, 512, 1024],
             ),
         )
     env.set_adversary(RandomModel())
     # env.render('human')
     print("Training model 1")
     model = model.learn(total_timesteps=timesteps[model_name], progress_bar=True)
-    dill.dump(model, open(f"{model_name}.pkl", "wb"))
+    model.save(f"{model_name}.pkl")
 
 if __name__ == "__main__":
     import argparse
