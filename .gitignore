@@ -176,3 +176,4 @@ logs/
 *_hp_logs/*
 *.db
 *_logs/*
+*_hp_logs_*/*
